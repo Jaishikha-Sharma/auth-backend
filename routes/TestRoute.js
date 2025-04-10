@@ -29,17 +29,24 @@ testRouter.post("/assign", authMiddleware, adminMiddleware, async (req, res) => 
 });
 testRouter.post("/upload", authMiddleware, adminMiddleware, upload.single("file"), async (req, res) => {
   try {
+    console.log("📂 File received:", req.file); // Debug line
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
     const result = await cloudinary.uploader.upload(req.file.path, {
       resource_type: "raw", // because it's a PDF
     });
 
-    // Delete local file after upload
     fs.unlinkSync(req.file.path);
 
     res.status(200).json({ url: result.secure_url });
   } catch (err) {
+    console.error("❌ Upload error:", err);
     res.status(500).json({ message: "Failed to upload PDF", error: err.message });
   }
 });
+
 
 export default testRouter;
