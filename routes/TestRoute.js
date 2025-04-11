@@ -11,6 +11,7 @@ const upload = multer({ dest: "uploads/" });
 
 // Get tests for a logged-in user
 testRouter.get("/getTest", authMiddleware, async (req, res) => {
+  console.log("🔑 Decoded User:", req.user);
   const tests = await Test.find({ userId: req.user.userId });
   res.json(tests);
 });
